@@ -15,6 +15,10 @@ type Token struct {
 	Position Position
 }
 
+func (t *Token) Line() int {
+	return t.Position.Line
+}
+
 func (t Token) String() string {
 	return fmt.Sprintf("<type: %s, value: %s>", t.Name, t.Value)
 }

@@ -1,53 +1,66 @@
 package ast
 
 type Expr interface {
+	PositionHolder
 	exprMaker()
 }
+
+type ExprImpl struct {
+	Node
+}
+
+func (*ExprImpl) exprMaker() {}
 
 type ConstExpr interface {
 	Expr
 	constExprMaker()
 }
 
+type ConstExprImpl struct {
+	ExprImpl
+}
+
+func (*ConstExprImpl) constExprMaker() {}
+
 type TrueExpr struct {
-	ConstExpr
+	ConstExprImpl
 }
 
 type FalseExpr struct {
-	ConstExpr
+	ConstExprImpl
 }
 
 type NilExpr struct {
-	ConstExpr
+	ConstExprImpl
 }
 
 type NumberExpr struct {
-	ConstExpr
-	Num string
+	ConstExprImpl
+	Value string
 }
 
 type StringExpr struct {
-	Expr
-	S string
+	ExprImpl
+	Value string
 }
 
 type IdentExpr struct {
-	Expr
+	ExprImpl
 	Value string
 }
 
 type SliceExpr struct {
-	Expr
+	ExprImpl
 	Values []Expr
 }
 
 type MapExpr struct {
-	Expr
-	Dict map[Expr]Expr
+	ExprImpl
+	Fields []*Field
 }
 
 type FuncCallExpr struct {
-	Expr
+	ExprImpl
 
 	Func      Expr
 	Receiver  Expr
@@ -57,53 +70,64 @@ type FuncCallExpr struct {
 }
 
 type LogicalOpExpr struct {
-	Expr
+	ExprImpl
 
 	Operator string
-	Lhs      string
-	Rhs      string
+	Lhs      Expr
+	Rhs      Expr
 }
 
 type RelationalOpExpr struct {
-	Expr
+	ExprImpl
 	Operator string
 	Lhs      Expr
 	Rhs      Expr
 }
 
 type ArithmeticOpExpr struct {
-	Expr
+	ExprImpl
 
-	Operator string
-	Left     Expr
-	Right    Expr
+	Op  string
+	Lhs Expr
+	Rhs Expr
 }
 
 type UnaryMinusOpExpr struct {
-	Expr
+	ExprImpl
 	Value Expr
 }
 
-type FunctionExpr struct {
-	Expr
+type FuncExpr struct {
+	ExprImpl
 
+	ParList *ParList
 	Stmts []Stmt
 }
 
 type CaseExpr struct {
-	Expr
+	ExprImpl
 
-	Condition []Expr
-	Then      []Stmt
+	Names   []string
+	Chan    Expr
+	Stmts   []Stmt
+	Default bool
 }
 
-type ChannelExpr struct {
-	Expr
+type ChanSendExpr struct {
+	ExprImpl
 
-	Sender   Expr
-	Receiver Expr
+	Ch Expr
 }
 
-type FallThrough struct {
-	Expr
+type ChanReceiveExpr struct {
+	ExprImpl
+
+	Ch Expr
+}
+
+type AttrGetExpr struct {
+	ExprImpl
+
+	Object Expr
+	Key    Expr
 }

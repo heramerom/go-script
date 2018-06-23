@@ -6,12 +6,17 @@ type Stmt interface {
 }
 
 type StmtImpl struct {
+	Stmt
 }
+
+func (*StmtImpl) stmtMaker() {}
 
 type AssignStmt struct {
 	StmtImpl
-	Lhs []Expr
-	Rhs []Expr
+
+	Names []string
+	Vars  []Expr
+	Exprs []Expr
 }
 
 type FuncCallStmt struct {
@@ -22,10 +27,10 @@ type FuncCallStmt struct {
 type ForStmt struct {
 	StmtImpl
 
-	Name  string
-	Init  Expr
+	Names []string
+	Init  []Expr
 	Limit Expr
-	Step  Expr
+	Step  []Expr
 	Stmts []Stmt
 }
 
@@ -34,7 +39,7 @@ type ForRangeStmt struct {
 
 	Names []string
 	Expr  Expr
-	Stmt  []Stmt
+	Stmts []Stmt
 }
 
 type FuncDefineStmt struct {
@@ -50,7 +55,7 @@ type BreakStmt struct {
 type GoStmt struct {
 	StmtImpl
 
-	FuncCallStmt
+	Expr Expr
 }
 
 type SwitchStmt struct {
@@ -62,15 +67,36 @@ type SwitchStmt struct {
 type SelectStmt struct {
 	StmtImpl
 
-	Default Stmt
+	Cases []Expr
 }
 
 type DeferStmt struct {
 	StmtImpl
 
-	FuncCallStmt
+	Expr Expr
 }
 
 type ContinueStmt struct {
 	StmtImpl
+}
+
+type IfStmt struct {
+	StmtImpl
+
+	Condition Expr
+	Then      []Stmt
+	Else      []Stmt
+}
+
+type FuncDefStmt struct {
+	StmtImpl
+
+	Name *FuncName
+	Func Expr
+}
+
+type ReturnStmt struct {
+	StmtImpl
+
+	Exprs []Expr
 }
